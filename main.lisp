@@ -17,11 +17,13 @@
 
 (defparameter *rotation* 0.0)
 (defparameter *point-grid* (make-array '(10 30)))
+(defparameter *color-grid* (make-array '(10 30)))
+(defparameter *color-hold* 0)
 
 (defstruct vec3 x y z)
 
 (defun render ()
-  (gl:clear :color-buffer)
+  (gl:clear :color-buffer :depth-buffer)
   (gl:load-identity)
 
   (glu:look-at
@@ -33,12 +35,28 @@
 
   (gl:translate 0 0 10)
   (gl:rotate *rotation* 0 0.2 0.1)
-  
-  (gl:color 1 1 1)
+
+  (if (> *color-hold* 0)
+      (decf *color-hold*)
+      (progn
+	(setf
+	 (aref *color-grid*
+	       (random 10)
+	       (random 30))
+	 (make-vec3 :x 1 :y 1 :z 1))
+	(setf *color-hold* 2)))
 
   (dotimes (i 10)
     (dotimes (j 30)
-      (gl:with-primitive :line-loop
+      (gl:with-primitive :quads
+
+	(let ((c (aref *color-grid* i j)))
+
+	  (decf (vec3-x c) 0.01) (if (< (vec3-x c) 0) (setf (vec3-x c) 0))
+	  (decf (vec3-y c) 0.01) (if (< (vec3-y c) 0) (setf (vec3-y c) 0))
+	  (decf (vec3-z c) 0.01) (if (< (vec3-z c) 0) (setf (vec3-z c) 0))
+	  
+	  (gl:color (vec3-x c) (vec3-y c) (vec3-z c)))
 
 	(let* ((i2 (mod (+ i 1) 10))
 	       (j2 (mod (+ j 1) 30))
@@ -67,6 +85,8 @@
   
   (gl:matrix-mode :modelview)
   (gl:load-identity)
+
+  (gl:enable :depth-test)
   
   (dotimes (i 10)
     (let* ((outer-angle (* (/ i 10.0) (* pi 2)))
@@ -78,7 +98,13 @@
 	       (px (* (+ 5 xo) (cos inner-angle)))
 	       (py (* (+ 5 xo) (sin inner-angle))))
 
-	  (setf (aref *point-grid* i j) (make-vec3 :x px :y yo :z py))))))
+	  (setf (aref *point-grid* i j) (make-vec3 :x px :y yo :z py))
+
+	  (setf (aref *color-grid* i j) (make-vec3 :x (/ i 10.0) :y 0 :z 0))
+
+	  )
+
+	)))
 
   
   )
