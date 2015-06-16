@@ -7,6 +7,7 @@
 (defconstant +YRES+ 600)
 (defconstant +TOR-X-RES+ 10)
 (defconstant +TOR-Y-RES+ 30)
+(defconstant +BOX-SIZE+ 20)
 
 (load "mixer-base.lisp")
 (load "mixer-fadout.lisp")
@@ -85,38 +86,89 @@
   (incf *rotation* 0.1)
 
   (gl:translate 0 0 10)
-  (gl:rotate *rotation* 0 0.2 0.1)
 
-  (if (> *mixer-hold* 0)
-      (decf *mixer-hold*)
-      (progn
-	(setf *mixer* (choose-random-mixer))
-	(mixer-activate *mixer*)
-	(setf *mixer-hold* 100)))
+  (with-pushed-matrix
+    (gl:rotate *rotation* 0 0.2 0.1)
 
-  (mixer-step *mixer*)
+    (if (> *mixer-hold* 0)
+	(decf *mixer-hold*)
+	(progn
+	  (setf *mixer* (choose-random-mixer))
+	  (mixer-activate *mixer*)
+	  (setf *mixer-hold* (+ 100 (* 50 (random 5))))))
 
-  (dotimes (i +TOR-X-RES+)
-    (dotimes (j +TOR-Y-RES+)
-      (gl:with-primitive :quads
+    (mixer-step *mixer*)
 
-	(let ((c (aref *color-grid* i j)))
-	  (gl:color (vec3-x c) (vec3-y c) (vec3-z c)))
+    (dotimes (i +TOR-X-RES+)
+      (dotimes (j +TOR-Y-RES+)
+	(gl:with-primitive :quads
 
-	(let* ((i2 (mod (+ i 1) +TOR-X-RES+))
-	       (j2 (mod (+ j 1) +TOR-Y-RES+))
-	       (p1 (aref *point-grid* i  j ))
-	       (p2 (aref *point-grid* i2 j ))
-	       (p3 (aref *point-grid* i2 j2))
-	       (p4 (aref *point-grid* i  j2)))
+	  (let ((c (aref *color-grid* i j)))
+	    (gl:color (vec3-x c) (vec3-y c) (vec3-z c)))
 
-	  (gl:vertex (vec3-x p1) (vec3-y p1) (vec3-z p1))
-	  (gl:vertex (vec3-x p2) (vec3-y p2) (vec3-z p2))
-	  (gl:vertex (vec3-x p3) (vec3-y p3) (vec3-z p3))
-	  (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4))))))
+	  (let* ((i2 (mod (+ i 1) +TOR-X-RES+))
+		 (j2 (mod (+ j 1) +TOR-Y-RES+))
+		 (p1 (aref *point-grid* i  j ))
+		 (p2 (aref *point-grid* i2 j ))
+		 (p3 (aref *point-grid* i2 j2))
+		 (p4 (aref *point-grid* i  j2)))
+
+	    (gl:vertex (vec3-x p1) (vec3-y p1) (vec3-z p1))
+	    (gl:vertex (vec3-x p2) (vec3-y p2) (vec3-z p2))
+	    (gl:vertex (vec3-x p3) (vec3-y p3) (vec3-z p3))
+	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4)))))))
+
+  (gl:color 1 1 1)
+  
+  (with-pushed-matrix
+    (gl:rotate *rotation* 0.1 0.01 0.3)
+
+
+    (loop for i from (- +BOX-SIZE+) to +BOX-SIZE+ by 2
+       do 
+	 (gl:with-primitive :lines
+
+	  ;; top left->right
+	  (gl:vertex (- +BOX-SIZE+) +BOX-SIZE+ i)	  (gl:vertex  +BOX-SIZE+ +BOX-SIZE+ i)
+
+	  ;; bottom left->right
+	  (gl:vertex (- +BOX-SIZE+) (- +BOX-SIZE+) i)	  (gl:vertex  +BOX-SIZE+ (- +BOX-SIZE+) i)
+
+	  ;; front left->right
+	  (gl:vertex (- +BOX-SIZE+) i (- +BOX-SIZE+))	  (gl:vertex  +BOX-SIZE+ i (- +BOX-SIZE+))
+
+	  ;; back left->right
+	  (gl:vertex (- +BOX-SIZE+) i +BOX-SIZE+)	  (gl:vertex  +BOX-SIZE+ i +BOX-SIZE+)
+
+	  ;; left top->bottom
+	  (gl:vertex (- +BOX-SIZE+)  +BOX-SIZE+ i)	  (gl:vertex (- +BOX-SIZE+) (- +BOX-SIZE+) i)
+
+	  ;; right top->bottom
+	  (gl:vertex +BOX-SIZE+  +BOX-SIZE+ i)	  (gl:vertex +BOX-SIZE+ (- +BOX-SIZE+) i)
+
+	  ;; front top->bottom
+	  (gl:vertex i (- +BOX-SIZE+) (- +BOX-SIZE+))	  (gl:vertex i  +BOX-SIZE+ (- +BOX-SIZE+))
+
+	  ;; back top->bottom
+	  (gl:vertex i (- +BOX-SIZE+) +BOX-SIZE+)	  (gl:vertex i  +BOX-SIZE+ +BOX-SIZE+)
+
+	  ;; top front->back
+	  (gl:vertex i +BOX-SIZE+  +BOX-SIZE+)	  (gl:vertex i +BOX-SIZE+ (- +BOX-SIZE+))
+
+	  ;; bottom front->back
+	  (gl:vertex i (- +BOX-SIZE+)  +BOX-SIZE+)	  (gl:vertex i (- +BOX-SIZE+) (- +BOX-SIZE+))
+
+	  ;; left front->back
+	  (gl:vertex (- +BOX-SIZE+) i  +BOX-SIZE+)	  (gl:vertex (- +BOX-SIZE+) i (- +BOX-SIZE+))
+	  
+	  ;; right front->back
+	  (gl:vertex +BOX-SIZE+ i  +BOX-SIZE+)	  (gl:vertex +BOX-SIZE+ i (- +BOX-SIZE+))))))
+	  
+
+
+    )
 	
 
-  )
   
   
 (defun init ()
@@ -126,7 +178,7 @@
   
   (gl:matrix-mode :projection)
   (gl:load-identity)
-  (glu:perspective 45  (/ +XRES+ +YRES+) 0.5 30)
+  (glu:perspective 45  (/ +XRES+ +YRES+) 0.5 100)
   
   (gl:matrix-mode :modelview)
   (gl:load-identity)
