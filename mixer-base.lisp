@@ -28,7 +28,7 @@
   (setf *mixer-db-len* (length *mixer-db*)))
 
 (defun choose-random-mixer ()
-  (let ((p (random *mixer-db-len*)))
+  (let ((p 0));;(random *mixer-db-len*)))
     (labels ((sample (c list)
 	       (if (> c 0)
 		   (sample (- c 1) (cdr list))

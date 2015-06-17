@@ -5,14 +5,15 @@
 
 (defconstant +XRES+ 800)
 (defconstant +YRES+ 600)
-(defconstant +TOR-X-RES+ 30)
-(defconstant +TOR-Y-RES+ 50)
+(defconstant +TOR-X-RES+ 50)
+(defconstant +TOR-Y-RES+ 30)
 (defconstant +BOX-SIZE+ 20)
 
 (load "mixer-base.lisp")
 (load "mixer-fadout.lisp")
 (load "mixer-ring.lisp")
 (load "mixer-hring.lisp")
+(load "mixer-flame.lisp")
 
 (defpackage :taurus-demo
   (:use :cl :glfw :opengl :glu))
@@ -104,19 +105,19 @@
 
     (mixer-step *mixer*)
 
-    (dotimes (i +TOR-X-RES+)
-      (dotimes (j +TOR-Y-RES+)
+    (dotimes (y +TOR-Y-RES+) ;; j
+      (dotimes (x +TOR-X-RES+) ;; i
 	(gl:with-primitive :quads
 
-	  (let ((c (aref *color-grid* i j)))
+	  (let ((c (aref *color-grid* x y)))
 	    (gl:color (vec3-x c) (vec3-y c) (vec3-z c)))
 
-	  (let* ((i2 (mod (+ i 1) +TOR-X-RES+))
-		 (j2 (mod (+ j 1) +TOR-Y-RES+))
-		 (p1 (aref *point-grid* i  j ))
-		 (p2 (aref *point-grid* i2 j ))
-		 (p3 (aref *point-grid* i2 j2))
-		 (p4 (aref *point-grid* i  j2)))
+	  (let* ((x2 (mod (+ x 1) +TOR-X-RES+))
+		 (y2 (mod (+ y 1) +TOR-Y-RES+))
+		 (p1 (aref *point-grid* x  y ))
+		 (p2 (aref *point-grid* x2 y ))
+		 (p3 (aref *point-grid* x2 y2))
+		 (p4 (aref *point-grid* x  y2)))
 
 	    (gl:vertex (vec3-x p1) (vec3-y p1) (vec3-z p1))
 	    (gl:vertex (vec3-x p2) (vec3-y p2) (vec3-z p2))
@@ -187,20 +188,21 @@
   (gl:load-identity)
 
   (gl:enable :depth-test)
-  
-  (dotimes (i +TOR-X-RES+)
-    (let* ((outer-angle (* (/ i (float +TOR-X-RES+)) (* pi 2)))
+
+  (dotimes (y +TOR-Y-RES+) ;j
+    (let* ((outer-angle (* (/ y (float +TOR-Y-RES+)) (* pi 2)))
 	   (xo (* 2 (cos outer-angle)))
 	   (yo (* 2 (sin outer-angle))))
     
-      (dotimes (j +TOR-Y-RES+)
-	(let* ((inner-angle (* (/ j (float +TOR-Y-RES+)) (* pi 2)))
+      (dotimes (x +TOR-X-RES+) ;i
+	(let* ((inner-angle (* (/ x (float +TOR-X-RES+)) (* pi 2)))
 	       (px (* (+ 5 xo) (cos inner-angle)))
 	       (py (* (+ 5 xo) (sin inner-angle))))
+    
 
-	  (setf (aref *point-grid* i j) (make-vec3 :x px :y yo :z py))
+	  (setf (aref *point-grid* x y) (make-vec3 :x px :y yo :z py))
 
-	  (setf (aref *color-grid* i j) (make-vec3 :x (/ i 10.0) :y 0 :z 0))
+	  (setf (aref *color-grid* x y) (make-vec3 :x 0 :y 0 :z 0))
 
 	  )
 
@@ -215,6 +217,8 @@
     (add-mixer :ring mixer))
 
   (add-mixer :hring (make-instance 'hring-mixer))
+
+  (add-mixer :flame (make-instance 'flame-mixer))
   )
 
 (defun main ()
