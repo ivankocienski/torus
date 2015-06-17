@@ -3,82 +3,22 @@
 (ql:quickload :cl-opengl)
 (ql:quickload :cl-glu)
 
-(defconstant +XRES+ 800)
-(defconstant +YRES+ 600)
-(defconstant +TOR-X-RES+ 50)
-(defconstant +TOR-Y-RES+ 30)
-(defconstant +BOX-SIZE+ 20)
-
-(load "mixer-base.lisp")
-(load "mixer-fadout.lisp")
-(load "mixer-ring.lisp")
-(load "mixer-hring.lisp")
-(load "mixer-flame.lisp")
-
 (defpackage :taurus-demo
   (:use :cl :glfw :opengl :glu))
 
 (in-package :taurus-demo)
 
-
-;; TODO: fewer magic numbers
-
-(defparameter *rotation* 0.0)
-(defparameter *point-grid* (make-array (list +TOR-X-RES+ +TOR-Y-RES+)))
-(defparameter *color-grid* (make-array (list +TOR-X-RES+ +TOR-Y-RES+)))
-;;(defparameter *color-hold* 0)
-(defparameter *mixer* nil)
-(defparameter *mixer-hold* 0)
-
-(defstruct vec3 x y z)
+(load "common.lisp")
+(load "mixer-base.lisp")
+(load "mixer-fadout.lisp")
+(load "mixer-ring.lisp")
+(load "mixer-hring.lisp")
+(load "mixer-flame.lisp")
+(load "mixer-twist.lisp")
 
 (defun reset-mixer ()
   (setf *mixer-hold* 0)
   (setf *mixer* nil))
-
-(defun rainbow-vector (a)
-
-  (let ((f (* (mod a 1/6) 6)))
-    
-    (cond
-      ((< a 1/6)
-       (make-vec3 ;red to yellow
-	:x 1
-	:y f
-	:z 0)) 
-
-      ((< a 2/6) ; yellow to green
-       (make-vec3
-	:x (- 1 f)
-	:y 1
-	:z 0))
-
-      ((< a 3/6) ; green to blue
-       (make-vec3
-	:x 0
-	:y 1
-	:z f))
-
-      ((< a 4/6) ; blue to purple
-       (make-vec3
-	:x 0
-	:y (- 1 f)
-	:z 1))
-
-      ((< a 5/6) ; purple to red
-       (make-vec3
-	:x f
-	:y 0
-	:z 1))
-
-      (T
-       (make-vec3
-	:x 1
-	:y 0
-	:z (- 1 f))))
-    
-
-    ))
 
 (defun render ()
   (gl:clear :color-buffer :depth-buffer)
@@ -219,6 +159,8 @@
   (add-mixer :hring (make-instance 'hring-mixer))
 
   (add-mixer :flame (make-instance 'flame-mixer))
+
+  (add-mixer :twist (make-instance 'twist-mixer))
   )
 
 (defun main ()
@@ -230,3 +172,61 @@
        do (render)
        do (swap-buffers)
        do (poll-events))))
+
+
+(defun debug-mixer (mxr)
+  (with-init-window (:title "GL Window" :width +XRES+ :height +YRES+)
+
+    (add-mixer :twist (make-instance 'twist-mixer))
+    
+    (let ((mixer (cdr (assoc mxr *mixer-db*))))
+
+      (gl:clear-color 0 0 0 1)
+      (gl:viewport 0 0 +XRES+ +YRES+)
+      
+      (gl:matrix-mode :projection)
+      (gl:load-identity)
+      (gl:ortho 0 +XRES+ +YRES+ 0 -1 1)
+      
+      (gl:matrix-mode :modelview)
+      (gl:load-identity)
+      
+      (dotimes (y +TOR-Y-RES+)
+	(dotimes (x +TOR-X-RES+)
+	  (setf (aref *color-grid* x y) (make-vec3 :x 0 :y 0 :z 0))
+	  ))
+
+  
+      (mixer-activate mixer)
+    
+      (loop until (window-should-close-p)
+	 do (progn
+
+	      (mixer-step mixer)
+	      
+	      (gl:with-primitive :quads
+		(dotimes (y +TOR-Y-RES+)
+		  (dotimes (x +TOR-X-RES+)
+
+		    (let* ((rx (* x 20))
+			   (ry (* y 20))
+			   (rx2 (+ rx 19))
+			   (ry2 (+ ry 19)))
+
+		      (let ((c (aref *color-grid* x y)))
+			(gl:color
+			 (vec3-x c)
+			 (vec3-y c)
+			 (vec3-z c)))
+		      
+		      (gl:vertex rx  ry)
+		      (gl:vertex rx2 ry)
+		      (gl:vertex rx2 ry2)
+		      (gl:vertex rx  ry2)))))
+		      
+		      
+		  
+	      
+	      (swap-buffers)
+	      (poll-events))))))
+  
