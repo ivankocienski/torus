@@ -5,13 +5,14 @@
 
 (defconstant +XRES+ 800)
 (defconstant +YRES+ 600)
-(defconstant +TOR-X-RES+ 10)
-(defconstant +TOR-Y-RES+ 30)
+(defconstant +TOR-X-RES+ 30)
+(defconstant +TOR-Y-RES+ 50)
 (defconstant +BOX-SIZE+ 20)
 
 (load "mixer-base.lisp")
 (load "mixer-fadout.lisp")
 (load "mixer-ring.lisp")
+(load "mixer-hring.lisp")
 
 (defpackage :taurus-demo
   (:use :cl :glfw :opengl :glu))
@@ -29,6 +30,10 @@
 (defparameter *mixer-hold* 0)
 
 (defstruct vec3 x y z)
+
+(defun reset-mixer ()
+  (setf *mixer-hold* 0)
+  (setf *mixer* nil))
 
 (defun rainbow-vector (a)
 
@@ -118,13 +123,13 @@
 	    (gl:vertex (vec3-x p3) (vec3-y p3) (vec3-z p3))
 	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4)))))))
 
-  (gl:color 1 1 1)
+  (gl:color 0.4 0.4 0.4)
   
   (with-pushed-matrix
     (gl:rotate *rotation* 0.1 0.01 0.3)
 
 
-    (loop for i from (- +BOX-SIZE+) to +BOX-SIZE+ by 2
+    (loop for i from (- +BOX-SIZE+) to +BOX-SIZE+ by 5
        do 
 	 (gl:with-primitive :lines
 
@@ -162,10 +167,8 @@
 	  (gl:vertex (- +BOX-SIZE+) i  +BOX-SIZE+)	  (gl:vertex (- +BOX-SIZE+) i (- +BOX-SIZE+))
 	  
 	  ;; right front->back
-	  (gl:vertex +BOX-SIZE+ i  +BOX-SIZE+)	  (gl:vertex +BOX-SIZE+ i (- +BOX-SIZE+))))))
+	  (gl:vertex +BOX-SIZE+ i  +BOX-SIZE+)	  (gl:vertex +BOX-SIZE+ i (- +BOX-SIZE+)))))
 	  
-
-
     )
 	
 
@@ -185,7 +188,7 @@
 
   (gl:enable :depth-test)
   
-  (dotimes (i 10)
+  (dotimes (i +TOR-X-RES+)
     (let* ((outer-angle (* (/ i (float +TOR-X-RES+)) (* pi 2)))
 	   (xo (* 2 (cos outer-angle)))
 	   (yo (* 2 (sin outer-angle))))
@@ -210,6 +213,8 @@
   (let ((mixer (make-instance 'ring-mixer)))
     (mixer-init mixer)
     (add-mixer :ring mixer))
+
+  (add-mixer :hring (make-instance 'hring-mixer))
   )
 
 (defun main ()
