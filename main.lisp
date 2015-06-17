@@ -197,36 +197,44 @@
 	  ))
 
   
-      (mixer-activate mixer)
-    
-      (loop until (window-should-close-p)
-	 do (progn
 
-	      (mixer-step mixer)
+
+      (let ((reactivate 0))
+	
+	(loop until (window-should-close-p)
+	   do (progn
+		
+		(if (> reactivate 0)
+		    (decf reactivate)
+		    (progn
+		      (mixer-activate mixer)
+		      (setf reactivate 100)))
+
+		(mixer-step mixer)
 	      
-	      (gl:with-primitive :quads
-		(dotimes (y +TOR-Y-RES+)
-		  (dotimes (x +TOR-X-RES+)
+		(gl:with-primitive :quads
+		  (dotimes (y +TOR-Y-RES+)
+		    (dotimes (x +TOR-X-RES+)
 
-		    (let* ((rx (* x 20))
-			   (ry (* y 20))
-			   (rx2 (+ rx 19))
-			   (ry2 (+ ry 19)))
+		      (let* ((rx (* x 10))
+			     (ry (* y 10))
+			     (rx2 (+ rx 9))
+			     (ry2 (+ ry 9)))
 
-		      (let ((c (aref *color-grid* x y)))
-			(gl:color
-			 (vec3-x c)
-			 (vec3-y c)
-			 (vec3-z c)))
-		      
-		      (gl:vertex rx  ry)
-		      (gl:vertex rx2 ry)
-		      (gl:vertex rx2 ry2)
-		      (gl:vertex rx  ry2)))))
-		      
-		      
-		  
-	      
-	      (swap-buffers)
-	      (poll-events))))))
+			(let ((c (aref *color-grid* x y)))
+			  (gl:color
+			   (vec3-x c)
+			   (vec3-y c)
+			   (vec3-z c)))
+			
+			(gl:vertex rx  ry)
+			(gl:vertex rx2 ry)
+			(gl:vertex rx2 ry2)
+			(gl:vertex rx  ry2)))))
+		
+		
+		
+		
+		(swap-buffers)
+		(poll-events)))))))
   
