@@ -15,6 +15,7 @@
 (load "mixer-hring.lisp")
 (load "mixer-flame.lisp")
 (load "mixer-twist.lisp")
+(load "mixer-tron.lisp")
 
 (defun reset-mixer ()
   (setf *mixer-hold* 0)
@@ -161,6 +162,8 @@
   (add-mixer :flame (make-instance 'flame-mixer))
 
   (add-mixer :twist (make-instance 'twist-mixer))
+
+  (add-mixer :tron (make-instance 'tron-mixer))
   )
 
 (defun main ()
@@ -177,7 +180,7 @@
 (defun debug-mixer (mxr)
   (with-init-window (:title "GL Window" :width +XRES+ :height +YRES+)
 
-    (add-mixer :twist (make-instance 'twist-mixer))
+    (add-mixer :tron (make-instance 'tron-mixer))
     
     (let ((mixer (cdr (assoc mxr *mixer-db*))))
 
@@ -208,7 +211,7 @@
 		    (decf reactivate)
 		    (progn
 		      (mixer-activate mixer)
-		      (setf reactivate 100)))
+		      (setf reactivate 2000)))
 
 		(mixer-step mixer)
 	      
