@@ -1,19 +1,19 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
-(defclass flame-mixer (mixer-base) 
+(defclass flame-mixer (animator-base) 
   ((color :initform 0)
    (grid :initform (make-array (list +TOR-X-RES+ +TOR-Y-RES+) :initial-element 0))
    (hold :initform 0)
   ))
 
-(defmethod mixer-activate ((this flame-mixer))
+(defmethod animator-activate ((this flame-mixer))
   (with-slots (color) this
     (setf color
 	  (rainbow-vector (random 1.0)))
     ))
 
-(defmethod mixer-step ((this flame-mixer))
+(defmethod animator-step ((this flame-mixer))
   (with-slots (color grid hold) this
 
     (if (> hold 0)

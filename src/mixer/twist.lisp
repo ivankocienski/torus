@@ -1,7 +1,7 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
-(defclass twist-mixer (mixer-base)
+(defclass twist-mixer (animator-base)
   (
    ;; 0.0 -> 1.0 
    (phase :initform 0)
@@ -24,7 +24,7 @@
    ;; some color cycling
    (color-phase :initform 0)))
 
-(defmethod mixer-activate ((this twist-mixer))
+(defmethod animator-activate ((this twist-mixer))
   (with-slots (phase multiplier direction offset offset-inc color-phase phase-multiplier) this
     (setf phase 0)
     (setf multiplier 10.0)
@@ -35,7 +35,7 @@
     )
   )
 
-(defmethod mixer-step ((this twist-mixer))
+(defmethod animator-step ((this twist-mixer))
   (with-slots (phase multiplier direction color-phase phase-multiplier offset offset-inc) this
     
     (incf phase 0.01)

@@ -1,5 +1,5 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
 (defconstant +XRES+ 800)
 (defconstant +YRES+ 600)

@@ -1,7 +1,7 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
-(defclass hring-mixer (mixer-base) 
+(defclass ring-mixer (animator-base) 
   ((band-color :initform 0)
    (position :initform 0)
    (hold :initform 0)
@@ -9,10 +9,7 @@
    (step-dir :initform 0)
   ))
 
-(defmethod mixer-init ((this hring-mixer))
-  )
-
-(defmethod mixer-activate ((this hring-mixer))
+(defmethod animator-activate ((this ring-mixer))
   (with-slots (band-color step-dir hold-max) this
     
     (setf band-color
@@ -24,7 +21,7 @@
     
     ))
 
-(defmethod mixer-step ((this hring-mixer))
+(defmethod animator-step ((this ring-mixer))
   (with-slots (band-color position hold step-dir hold-max) this
 
     (fadeout-color-grid)
@@ -35,14 +32,14 @@
 	  (setf hold hold-max)
 	  
 	  (incf position step-dir)
-	  (if (> position (- +TOR-Y-RES+ 1))
-	      (decf position +TOR-Y-RES+))
+	  (if (> position (- +TOR-X-RES+ 1))
+	      (decf position +TOR-X-RES+))
 	  (if (< position 0)
-	      (incf position +TOR-Y-RES+))
+	      (incf position +TOR-X-RES+))
 
-	  (dotimes (x +TOR-X-RES+)
+	  (dotimes (y +TOR-Y-RES+)
 	    (setf
-	     (aref *color-grid* x position)
+	     (aref *color-grid* position y)
 	     (make-vec3
 	      :x (vec3-x band-color)
 	      :y (vec3-y band-color)

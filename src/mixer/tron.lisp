@@ -1,7 +1,7 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
-(defclass tron-mixer (mixer-base)
+(defclass tron-mixer (animator-base)
   ((pixels :initform nil)
   (hold :initform 0))
   )
@@ -41,7 +41,7 @@
   pixel
   )
 
-(defmethod mixer-activate ((this tron-mixer))
+(defmethod animator-activate ((this tron-mixer))
   (with-slots (pixels hold) this
 
     (unless pixels
@@ -55,7 +55,7 @@
 		   pixel))))
   ))
 
-(defmethod mixer-step ((this tron-mixer))
+(defmethod animator-step ((this tron-mixer))
   (with-slots (pixels hold) this
 
     ;; move

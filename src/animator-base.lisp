@@ -1,20 +1,17 @@
 
-(in-package :taurus-demo)
+(in-package :torus-demo)
 
 ;;
-;; the mixer class
+;; the animator class
 ;;
 
-(defclass mixer-base () ())
+(defclass animator-base () ())
 
-(defgeneric mixer-init (mixer)
-  (:documentation "Initialize mixer"))
-
-(defgeneric mixer-step (mixer)
+(defgeneric animator-step (a)
   (:documentation "One step of animation"))
 
-(defgeneric mixer-activate (mixer)
-  (:documentation "Called every time a mixer is chosen"))
+(defgeneric animator-activate (a)
+  (:documentation "Called every time a animator is chosen"))
 
 ;;
 ;; mixer pool stuff

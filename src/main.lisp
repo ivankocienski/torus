@@ -1,21 +1,5 @@
 
-(ql:quickload :cl-glfw3)
-(ql:quickload :cl-opengl)
-(ql:quickload :cl-glu)
-
-(defpackage :taurus-demo
-  (:use :cl :glfw :opengl :glu))
-
-(in-package :taurus-demo)
-
-(load "common.lisp")
-(load "mixer-base.lisp")
-(load "mixer-fadout.lisp")
-(load "mixer-ring.lisp")
-(load "mixer-hring.lisp")
-(load "mixer-flame.lisp")
-(load "mixer-twist.lisp")
-(load "mixer-tron.lisp")
+(in-package :torus-demo)
 
 (defun reset-mixer ()
   (setf *mixer-hold* 0)
@@ -41,10 +25,10 @@
 	(decf *mixer-hold*)
 	(progn
 	  (setf *mixer* (choose-random-mixer))
-	  (mixer-activate *mixer*)
+	  (animator-activate *mixer*)
 	  (setf *mixer-hold* (+ 100 (* 50 (random 5))))))
 
-    (mixer-step *mixer*)
+    (animator-step *mixer*)
 
     (dotimes (y +TOR-Y-RES+) ;; j
       (dotimes (x +TOR-X-RES+) ;; i
@@ -149,21 +133,12 @@
 
 	)))
 
-  (let ((mixer (make-instance 'fadout-mixer)))
-    (mixer-init mixer)
-    (add-mixer :fadeout mixer))
-
-  (let ((mixer (make-instance 'ring-mixer)))
-    (mixer-init mixer)
-    (add-mixer :ring mixer))
-
-  (add-mixer :hring (make-instance 'hring-mixer))
-
-  (add-mixer :flame (make-instance 'flame-mixer))
-
-  (add-mixer :twist (make-instance 'twist-mixer))
-
-  (add-mixer :tron (make-instance 'tron-mixer))
+  (add-mixer :fadeout (make-instance 'fadeout-mixer))
+  (add-mixer :ring    (make-instance 'ring-mixer))
+  (add-mixer :hring   (make-instance 'hring-mixer))
+  (add-mixer :flame   (make-instance 'flame-mixer))
+  (add-mixer :twist   (make-instance 'twist-mixer))
+  (add-mixer :tron    (make-instance 'tron-mixer))
   )
 
 (defun main ()
