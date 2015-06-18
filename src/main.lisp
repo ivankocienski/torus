@@ -7,6 +7,7 @@
 
 (defun render ()
   (gl:clear :color-buffer :depth-buffer)
+  
   (gl:load-identity)
 
   (glu:look-at
@@ -15,24 +16,28 @@
    0 1.5 0) ;; up
 
   (incf *rotation* 0.1)
+  
+  (if (> *mixer-hold* 0)
+      (decf *mixer-hold*)
+      (progn
+	(setf *mixer* (choose-random-mixer))
+	(animator-activate *mixer*)
+	(setf *mixer-hold* (+ 100 (* 50 (random 5))))))
 
+  (animator-step *mixer*)
+  
   (gl:translate 0 0 10)
 
+  (animator-step *background*)
+#|  (gl:clear :depth-buffer)
+  
   (with-pushed-matrix
     (gl:rotate *rotation* 0 0.2 0.1)
 
-    (if (> *mixer-hold* 0)
-	(decf *mixer-hold*)
-	(progn
-	  (setf *mixer* (choose-random-mixer))
-	  (animator-activate *mixer*)
-	  (setf *mixer-hold* (+ 100 (* 50 (random 5))))))
-
-    (animator-step *mixer*)
-
-    (dotimes (y +TOR-Y-RES+) ;; j
-      (dotimes (x +TOR-X-RES+) ;; i
-	(gl:with-primitive :quads
+    (gl:with-primitive :quads
+    
+      (dotimes (y +TOR-Y-RES+)
+	(dotimes (x +TOR-X-RES+)
 
 	  (let ((c (aref *color-grid* x y)))
 	    (gl:color (vec3-x c) (vec3-y c) (vec3-z c)))
@@ -47,54 +52,7 @@
 	    (gl:vertex (vec3-x p1) (vec3-y p1) (vec3-z p1))
 	    (gl:vertex (vec3-x p2) (vec3-y p2) (vec3-z p2))
 	    (gl:vertex (vec3-x p3) (vec3-y p3) (vec3-z p3))
-	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4)))))))
-
-  (gl:color 0.4 0.4 0.4)
-  
-  (with-pushed-matrix
-    (gl:rotate *rotation* 0.1 0.01 0.3)
-
-
-    (loop for i from (- +BOX-SIZE+) to +BOX-SIZE+ by 5
-       do 
-	 (gl:with-primitive :lines
-
-	  ;; top left->right
-	  (gl:vertex (- +BOX-SIZE+) +BOX-SIZE+ i)	  (gl:vertex  +BOX-SIZE+ +BOX-SIZE+ i)
-
-	  ;; bottom left->right
-	  (gl:vertex (- +BOX-SIZE+) (- +BOX-SIZE+) i)	  (gl:vertex  +BOX-SIZE+ (- +BOX-SIZE+) i)
-
-	  ;; front left->right
-	  (gl:vertex (- +BOX-SIZE+) i (- +BOX-SIZE+))	  (gl:vertex  +BOX-SIZE+ i (- +BOX-SIZE+))
-
-	  ;; back left->right
-	  (gl:vertex (- +BOX-SIZE+) i +BOX-SIZE+)	  (gl:vertex  +BOX-SIZE+ i +BOX-SIZE+)
-
-	  ;; left top->bottom
-	  (gl:vertex (- +BOX-SIZE+)  +BOX-SIZE+ i)	  (gl:vertex (- +BOX-SIZE+) (- +BOX-SIZE+) i)
-
-	  ;; right top->bottom
-	  (gl:vertex +BOX-SIZE+  +BOX-SIZE+ i)	  (gl:vertex +BOX-SIZE+ (- +BOX-SIZE+) i)
-
-	  ;; front top->bottom
-	  (gl:vertex i (- +BOX-SIZE+) (- +BOX-SIZE+))	  (gl:vertex i  +BOX-SIZE+ (- +BOX-SIZE+))
-
-	  ;; back top->bottom
-	  (gl:vertex i (- +BOX-SIZE+) +BOX-SIZE+)	  (gl:vertex i  +BOX-SIZE+ +BOX-SIZE+)
-
-	  ;; top front->back
-	  (gl:vertex i +BOX-SIZE+  +BOX-SIZE+)	  (gl:vertex i +BOX-SIZE+ (- +BOX-SIZE+))
-
-	  ;; bottom front->back
-	  (gl:vertex i (- +BOX-SIZE+)  +BOX-SIZE+)	  (gl:vertex i (- +BOX-SIZE+) (- +BOX-SIZE+))
-
-	  ;; left front->back
-	  (gl:vertex (- +BOX-SIZE+) i  +BOX-SIZE+)	  (gl:vertex (- +BOX-SIZE+) i (- +BOX-SIZE+))
-	  
-	  ;; right front->back
-	  (gl:vertex +BOX-SIZE+ i  +BOX-SIZE+)	  (gl:vertex +BOX-SIZE+ i (- +BOX-SIZE+)))))
-	  
+	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4)))))))	|#  
     )
 	
 
@@ -133,6 +91,11 @@
 
 	)))
 
+  ;;(setf *background* (make-instance 'cube-background))
+  ;;(setf *background* (make-instance 'star-field-background))
+  (setf *background* (make-instance 'odysey-background))
+  (animator-activate *background*)
+  
   (add-mixer :fadeout (make-instance 'fadeout-mixer))
   (add-mixer :ring    (make-instance 'ring-mixer))
   (add-mixer :hring   (make-instance 'hring-mixer))

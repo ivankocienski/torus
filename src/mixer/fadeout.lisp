@@ -5,13 +5,13 @@
   ((start-color :initform 0))
   )
 
-(defmethod mixer-activate ((this fadeout-mixer))
+(defmethod animator-activate ((this fadeout-mixer))
   (with-slots (start-color) this
     (setf start-color
 	  (rainbow-vector (random 1.0))))
   )
 
-(defmethod mixer-step ((this fadeout-mixer))
+(defmethod animator-step ((this fadeout-mixer))
   (with-slots (start-color) this
     
     (fadeout-color-grid)

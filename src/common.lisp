@@ -5,7 +5,6 @@
 (defconstant +YRES+ 600)
 (defconstant +TOR-X-RES+ 50)
 (defconstant +TOR-Y-RES+ 30)
-(defconstant +BOX-SIZE+ 20)
 
 ;; TODO: fewer magic numbers
 
@@ -15,6 +14,8 @@
 ;;(defparameter *color-hold* 0)
 (defparameter *mixer* nil)
 (defparameter *mixer-hold* 0)
+
+(defparameter *background* nil)
 
 (defstruct vec3 x y z)
 
