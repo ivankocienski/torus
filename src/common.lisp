@@ -16,6 +16,7 @@
 (defparameter *mixer-hold* 0)
 
 (defparameter *background* nil)
+(defparameter *background-hold* 0)
 
 (defstruct vec3 x y z)
 

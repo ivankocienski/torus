@@ -19,6 +19,7 @@
 	       (:file "src/background/cube")
 	       (:file "src/background/star-field")
 	       (:file "src/background/odysey")
+	       (:file "src/background/tunnel")
 	       
 	       (:file "src/main")))
 
