@@ -42,8 +42,7 @@
 (defmethod animator-activate ((this tunnel-background))
   (with-slots (num-parts turn-inc) this
     (setf
-     num-parts 3
-     )) ;(+ 3 (random 5))
+     num-parts (+ 3 (random 5))))
   )
 
 (defmethod animator-step ((this tunnel-background))
@@ -104,14 +103,6 @@
     
     (setf tail (trim-list tail 50))
 
-    ;;(dolist (t tail)
-
-      
-      
-      ;;)
-
-    ;;(tunnel-draw-segment current-target 10)
-
     (gl:color 0.5 0.5 0.5)
 
     (let ((pos 10))
@@ -129,26 +120,6 @@
 	       (+ (tunseg-y seg) py)
 	       pos))))
 
-	(decf pos 1)))
-		 
-
-	
-;;    (gl:with-primitive :quads
-;;      (gl:color 0.1 0.1 0.1)
-
-;;      (gl:vertex (- (tunseg-x target) 0.5) (- (tunseg-y target) 0.5) 10)
-;;      (gl:vertex (+ (tunseg-x target) 0.5) (- (tunseg-y target) 0.5) 10)
-;;      (gl:vertex (+ (tunseg-x target) 0.5) (+ (tunseg-y target) 0.5) 10)
-;;      (gl:vertex (- (tunseg-x target) 0.5) (+ (tunseg-y target) 0.5) 10)
-    
-      ;;(gl:color 0 0 1)
-
-      ;;(gl:vertex (- (tunseg-x current-target) 0.5) (- (tunseg-y current-target) 0.5) 10)
-      ;;(gl:vertex (+ (tunseg-x current-target) 0.5) (- (tunseg-y current-target) 0.5) 10)
-      ;;(gl:vertex (+ (tunseg-x current-target) 0.5) (+ (tunseg-y current-target) 0.5) 10)
-      ;;(gl:vertex (- (tunseg-x current-target) 0.5) (+ (tunseg-y current-target) 0.5) 10))
-;;      )
-		
-	  
+	(decf pos 1)))	       	  
     ))
   

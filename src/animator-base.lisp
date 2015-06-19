@@ -28,7 +28,7 @@
    *background-db-len* (length *background-db*)))
 
 (defun choose-random-background ()
-  (let ((p 0)) ;;(random *background-db-len*)))
+  (let ((p (random *background-db-len*)))
     (labels ((sample (c list)
 	       (if (> c 0)
 		   (sample (- c 1) (cdr list))

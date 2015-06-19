@@ -36,7 +36,7 @@
 	(setf *background-hold* (+ 200 (* 75 (random 10))))))
   
   (animator-step *background*)
-#|  (gl:clear :depth-buffer)
+ (gl:clear :depth-buffer)
   
   (with-pushed-matrix
     (gl:rotate *rotation* 0 0.2 0.1)
@@ -59,7 +59,7 @@
 	    (gl:vertex (vec3-x p1) (vec3-y p1) (vec3-z p1))
 	    (gl:vertex (vec3-x p2) (vec3-y p2) (vec3-z p2))
 	    (gl:vertex (vec3-x p3) (vec3-y p3) (vec3-z p3))
-	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4))))))) |#       
+	    (gl:vertex (vec3-x p4) (vec3-y p4) (vec3-z p4)))))))       
     )
 	
 
