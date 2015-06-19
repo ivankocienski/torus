@@ -73,3 +73,15 @@
     
 
     ))
+
+(defun trim-list (list len)
+  (let ((first (car list)))
+    (if (and (> len 0) first)
+	(cons first (trim-list (cdr list) (- len 1)))))
+  )
+
+(defmacro on-decrement-counter (counter &body body)
+  `(if (> ,counter 0)
+       (decf ,counter)
+       (progn
+	 ,@body)))
