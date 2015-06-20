@@ -84,13 +84,13 @@
 				  
 				  ))))))
 
-      (gl:color 0.5 0.5 0.5)
+      (gl:color 0.8 0.8 0.8)
 
       (gl:with-primitive :lines
 	(dolist (line lines)
 
 	  (decf (odysey-line-py line) 0.2)
-	  (if (< (odysey-line-py line) -10)
+	  (if (< (odysey-line-py line) -15)
 	      (odysey-randomize-line line))
       
 	  (funcall draw-func line)))))

@@ -16,9 +16,6 @@
 
    ;;(scale              :initform 0)
    (scale-target       :initform 0)
-   (scale-wobble       :initform 0)
-   (scale-wobble-scale :initform 0)
-   (scale-wobble-speed :initform 0)
    (scale-hold         :initform 0)
 
    (num-parts :initform 0)
@@ -58,9 +55,6 @@
 	       turn-hold
 	       
 	       scale-target
-	       scale-wobble
-	       scale-wobble-scale
-	       scale-wobble-speed
 	       scale-hold) this
 
     (if (> move-jitter-hold 0)
@@ -86,7 +80,7 @@
     (if (> scale-hold 0)
 	(decf scale-hold)
 	(setf
-	 scale-target (+ 4 (random 6.0))
+	 scale-target (+ 0.5 (* 4 (random 4)))
 	 scale-hold (+ 10 (* 5 (random 50)))))
 	 
     (let ((tx (+ (tunseg-x move-target) (tunseg-x move-jitter)))
@@ -103,7 +97,7 @@
     
     (setf tail (trim-list tail 50))
 
-    (gl:color 0.5 0.5 0.5)
+    (gl:color 0.8 0.8 0.8)
 
     (let ((pos 10))
 
@@ -120,6 +114,6 @@
 	       (+ (tunseg-y seg) py)
 	       pos))))
 
-	(decf pos 1)))	       	  
+	(decf pos 1)))
     ))
   

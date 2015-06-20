@@ -13,13 +13,13 @@
 	     collect (make-vec3
 		      :x (* 10 (- 1.0 (random 2.0)))
 		      :y (* 10 (- 1.0 (random 2.0)))
-		      :z (* 20 (- 1.0 (random 2.0)))))
+		      :z (- (* 30 (random 1.0)) 10))))
 	  fixed-stars
 	  (loop repeat 500
 	     collect (make-vec3
-		      :x (* 10 (- 1.0 (random 2.0)))
-		      :y (* 10 (- 1.0 (random 2.0)))
-		      :z (* 20 (- 1.0 (random 2.0)))))))
+		      :x (* 25 (- 1.0 (random 2.0)))
+		      :y (* 15 (- 1.0 (random 2.0)))
+		      :z 20))))
   )
 
 (defmethod animator-activate ((this star-field-background))
@@ -29,22 +29,13 @@
 
   (with-slots (stars fixed-stars) this
 
-    (with-primitive :points
-
-      (gl:color 0.2 0.2 0.2)
-      
-      (dolist (star fixed-stars)
-
-	(gl:vertex
-	 (vec3-x star)
-	 (vec3-y star)
-	 (vec3-z star)))
+    (with-primitive :quads
   
-      (gl:color 0.4 0.4 0.4)
+      (gl:color 0.8 0.8 0.8)
       
       (dolist (star stars)
 
-	(decf (vec3-z star) 0.25)
+	(decf (vec3-z star) 0.5)
 	(if (< (vec3-z star) -10)
 	    (progn
 	      (setf
@@ -52,9 +43,12 @@
 	       (vec3-y star) (* 10 (- 1.0 (random 2.0)))
 	       (vec3-z star) 20)))
 
-	(gl:vertex
-	 (vec3-x star)
-	 (vec3-y star)
-	 (vec3-z star)))))
-  )
+	(let ((x (vec3-x star)) (y (vec3-y star)) (z (vec3-z star)))
+	  
+	  (gl:vertex x (- y 0.025) z)
+	  (gl:vertex (+ x 0.025) y z)
+	  (gl:vertex x (+ y 0.025) z)
+	  (gl:vertex (- x 0.025) y z))
+	  
+	))))
 
