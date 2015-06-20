@@ -6,11 +6,11 @@ that doesn't stop it from looking kinda cool.
 
 ## Screen shots
 
-!(/screenshots/screen-00.jpg?raw=true)
+![Screen shot 1](/screenshots/screen-00.jpg?raw=true)
 
-!(/screenshots/screen-01.jpg?raw=true)
+![Screen shot 2](/screenshots/screen-01.jpg?raw=true)
 
-!(/screenshots/screen-02.jpg?raw=true)
+![Screen shot 3](/screenshots/screen-02.jpg?raw=true)
 
 ## Requirements
 
